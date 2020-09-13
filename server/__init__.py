@@ -49,7 +49,7 @@ def create_app(config_class=Development):
             else:
                 if not os.path.exists('logs'):
                     os.mkdir('logs')
-                file_handler = RotatingFileHandler('logs/notebookz.log',
+                file_handler = RotatingFileHandler('logs/conmentarium.log',
                                                    maxBytes=20480, backupCount=20)
                 file_handler.setFormatter(logging.Formatter(
                     '%(asctime)s %(levelname)s: %(message)s '

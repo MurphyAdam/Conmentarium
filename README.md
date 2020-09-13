@@ -1,22 +1,22 @@
-# Notebookz
+# Conmentarium
 
 Minimalistic notebooks app built with React + Material-UI, and served with Flask. Star, fork or contribute if you wish so. 
 
-### [live Demo](https://notebookz.herokuapp.com/ "Notebookz")
+### [live Demo](https://conmentarium.herokuapp.com/ "Conmentarium")
 
 #### What you need to run this code locally (build folder)
 1. Python 3 installed
 2. Install Dependecies in requirement.txt
 3. In the root of this directory: 
 
-#### Client /notebookz
+#### Client /conmentarium
 ```bash
 cd client
 yarn (or npm install)
 yarn build (or npm run build)
 ```
 
-#### Server /notebookz
+#### Server /conmentarium
 ```bash
 export FLASK_ENV=development
 flask run
