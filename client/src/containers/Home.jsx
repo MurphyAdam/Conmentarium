@@ -88,14 +88,12 @@ const Home = (props) => {
   const [notebook, setNotebook] = useState([]);
 
   useEffect(() => {
-    const abortController = new AbortController()
-    fetchNotebook().then((data) => {
-      if(data.error) setNotebook(defaultNotebook);
-      else if (data.notebook) setNotebook(data.notebook);
-      else setNotebook(defaultNotebook);
-    })
-    return function cleanup(){
-      abortController.abort()
+    try {
+      const response = fetchNotebook();
+      setNotebook(response.data.notes)
+    } catch (error) {
+      console.log(error)
+      setNotebook(defaultNotebook);
     }
   }, [])
 

@@ -6,6 +6,7 @@ Minimalistic notebooks app built with React + Material-UI, and served with Flask
 
 #### What you need to run this code locally (build folder)
 1. Python 3 installed
+2. Postgres database installed and running
 2. Install Dependecies in requirement.txt
 3. In the root of this directory: 
 
@@ -19,6 +20,9 @@ yarn build (or npm run build)
 #### Server /conmentarium
 ```bash
 export FLASK_ENV=development
+flask db init
+flask db migrate
+flask db upgrade
 flask run
 ```
 
@@ -45,4 +49,4 @@ at Heroku and push this repository to it. Learn more on doing so on [Flask PWA C
 
 ### GitHub repository
 
-[https://github.com/MurphyAdam/Concentio](https://github.com/MurphyAdam/Concentio")
+[https://github.com/MurphyAdam/Conmentarium](https://github.com/MurphyAdam/ConmentariumConmentarium

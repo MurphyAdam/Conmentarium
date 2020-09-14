@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import request
 from flask_login import login_required, current_user
 from server.api_bp import api_bp
@@ -5,6 +6,15 @@ from server.schemas import note_schema, notes_schema
 from server.forms import notes_validator
 from server.functions import is_empty
 from server.models import Notes, Tag
+
+@api_bp.route("/handshake")
+def handshake():
+    time = datetime.utcnow()
+    return {
+            "code": 200,
+            "message": "Hello, world!", 
+            "time": time,
+        }, 200
 
 @api_bp.route('/notebook', methods=["GET", "POST"])
 @login_required

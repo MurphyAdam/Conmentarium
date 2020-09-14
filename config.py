@@ -35,7 +35,7 @@ class Config(object):
 	Databases variabbles
 	"""
 	SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-	'sqlite:///' + os.path.join(basedir, 'notebookz/Adam.db')
+	'sqlite:///' + os.path.join(basedir, 'conmentarium/Adam.db')
 	SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 class Development(Config):
@@ -57,7 +57,7 @@ class Development(Config):
 	"""
 	Databases variabbles
 	"""
-	SQLALCHEMY_DATABASE_URI = "postgresql://postgres@localhost/notebookz"
+	SQLALCHEMY_DATABASE_URI = "postgresql://postgres@localhost/conmentarium"
 	SQLALCHEMY_TRACK_MODIFICATIONS = False
 	SQLALCHEMY_ECHO = False
 
@@ -73,6 +73,6 @@ class Testing(Config):
 	"""
 	Databases variabbles
 	"""
-	SQLALCHEMY_DATABASE_URI = "postgresql://postgres@localhost/notebookz"
+	SQLALCHEMY_DATABASE_URI = "postgresql://postgres@localhost/conmentarium"
 	SQLALCHEMY_TRACK_MODIFICATIONS = False
 	SQLALCHEMY_ECHO = False
