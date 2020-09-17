@@ -71,10 +71,18 @@ def gp_notebook():
 			"note_id": None
 			}, 400
 
-@api_bp.route('/notebook/id', methods=["GET", "PUT", "DELETE"])
+@api_bp.route('/notebook/<int:id>', methods=["GET", "PUT", "DELETE"])
 @login_required
 def gpd_notebooks(id):
 	note = current_user.get_note(id)
+	if not note:
+	  return {
+      "code": 404,
+      "message":"note with that id was not found", 
+      "success": False,
+      "category":"is-warning",
+      "note_id": id, 
+  }, 404
 	if request.method == "GET":
 		if note:
 			return {
@@ -114,13 +122,23 @@ def gpd_notebooks(id):
 				"category":"is-primary",
 				"note": note_schema.dump(note),
 				}, 200
-	return {
-		"code": 400,
-		"message":"Could not add to database. Might be an enternal error."
-		" Or that you may not have permission to do so. Please try again later.", 
-		"success": False,
-		"category":"is-warning",
-		}, 400
+		return {
+			"code": 400,
+			"message":"Could not add to database. Might be an enternal error."
+			" Or that you may not have permission to do so. Please try again later.", 
+			"success": False,
+			"category":"is-warning",
+			}, 400
+	if request.method == "DELETE":
+		db.session.delete(note)
+		db.session.commit()
+		return {
+			"code": 200,
+			"message":"Note deleted successfully", 
+			"success": True,
+			"category":"is-primary",
+			"note_id": id, 
+		}, 200
 
 def add_tags(tag):
 	if tag is None:

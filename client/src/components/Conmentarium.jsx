@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Notebookz = (props) => {
+const Conmentarium = (props) => {
 
 	const { notebook } = {...props};
 	const classes = useStyles();
@@ -69,4 +69,4 @@ const Notebookz = (props) => {
 	);
 }
 
-export default Notebookz;
+export default Conmentarium;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
@@ -10,6 +10,13 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import EditIcon from '@material-ui/icons/Edit';
 import IconButton from '@material-ui/core/IconButton';
 import NoteIcon from '@material-ui/icons/Note';
+import DoneIcon from '@material-ui/icons/Done';
+import { updateNote } from '../services/note-api';
+
+import { useDispatch } from 'react-redux';
+import { error as notificationError, 
+  success as notificationSuccess } from 'react-notification-system-redux';
+import { notificationTemplate } from '../redux/methods';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -50,14 +57,36 @@ const noteColors = [
 export default function EditNote(props) {
 
 	const { note, handleToggleActions } = {...props};
+  const dispatch = useDispatch();
   const classes = useStyles();
-  const [noteUpdate, setNoteUpdate] = React.useState(
+  const [noteUpdate, setNoteUpdate] = useState(
   	{
+      id: note.id,
   		title: note.title, 
   		body: note.body, 
   		color: note.color, 
   		tags: note.tags
   	});
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async event => {
+    event.preventDefault();
+    setIsLoading(true);
+    try {
+      const response = await updateNote(noteUpdate);
+      dispatch(notificationSuccess({...notificationTemplate, 
+            'title': response.data.message || "Note updated successfully", 
+            'autoDismiss': 0,
+          }));
+    } catch (error) {
+        dispatch(notificationError({'title': error.response.data.message || 
+          error.request.statusText,
+          'autoDismiss': 0,
+          'message': `Failed to edit note`,
+        }));
+    }
+    setIsLoading(false);
+  }
 
   const handleColorChange = color => {
     setNoteUpdate(noteUpdate => ({ ...noteUpdate, color: color }));
@@ -133,6 +162,9 @@ return (
 			<IconButton onClick={() => handleToggleActions("toggleEdit")}>
 				<EditIcon />
 			</IconButton>
+      <IconButton onClick={handleSubmit}>
+        <DoneIcon />
+      </IconButton>
 		</CardActions>
   </Card>
   );

@@ -1,9 +1,11 @@
 import React, { useState, lazy, useEffect } from 'react';
-import Notebookz from '../components/Notebookz';
+import Conmentarium from '../components/Conmentarium';
+import Grid from '@material-ui/core/Grid';
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Typography from "@material-ui/core/Typography";
+import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import MailIcon from '@material-ui/icons/Mail';
@@ -15,20 +17,21 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import DeleteIcon from '@material-ui/icons/Delete';
 import {fetchNotebook} from '../services/note-api';
 import { connect } from 'react-redux';
-import { getCurrentUser } from '../redux/actions/auth';
 
-const SingIn = lazy(() => import('../components/Auth/SignIn'));
+const SignIn = lazy(() => import('../components/Auth/SignIn'));
+const SignUp = lazy(() => import('../components/Auth/SignUp'));
 
 export const useStyles = makeStyles((theme) => ({
   card: {
     display: "flex",
-    margin: theme.spacing(1)
+    margin: theme.spacing(1),
+    boxShadow: 'none !important'
   },
   cardDetails: {
     flex: 1
   },
   cardMedia: {
-    width: 160,
+    minWidth: 160,
   },
   a: {
     textDecoration: 'none',
@@ -81,11 +84,20 @@ const defaultNotebook = [
   },
 ];
 
+const mapLazyComponents = {
+  SignIn: SignIn,
+  SignUp: SignUp,
+  Conmentarium: Conmentarium,
+}
+
 const Home = (props) => {
 	
   const { isAuthenticated } = {...props};
 	const classes = useStyles();
   const [notebook, setNotebook] = useState([]);
+  const [authAction, setAuthAction] = useState();
+  const [currentAuthOP, setCurrentAuthOP] = useState("SignIn");
+  const AuthComponent = mapLazyComponents[currentAuthOP];
 
   useEffect(() => {
     try {
@@ -99,91 +111,98 @@ const Home = (props) => {
 
 	return (
 		<React.Fragment>
-        {isAuthenticated
+        {!isAuthenticated
           ?
           <React.Fragment>
-            <div className={classes.cardDetails}>
-              <Card className={classes.card}>
-                <CardContent>
-                  <Typography 
-                    variant="h5" 
-                    gutterBottom
-                  >
-                    Notebookz, a simple notebook for all ideas.
-                  </Typography>
-                  <Typography 
-                    variant="subtitle2" 
-                    color="textSecondary"
-                    paragraph>
-                    Minimalistic notebook app built with React + Material-UI, and served with Flask. Star, 
-                    fork or contribute if you wish so. 
-                    <a href="https://github.com/MurphyAdam" 
-                      target="_blank"
-                      rel="noopener noreferrer" 
-                      className={classes.a}> By: @GitHub/MurphyAdam (Majdi)
-                    </a>
-                  </Typography>
-                  <IconButton 
-                    component="a"
-                    title="GitHub" 
-                    aria-label="GitHub" 
-                    color="inherit"
-                    href="https://github.com/MurphyAdam"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    >
-                    <GitHubIcon />
-                  </IconButton>
-                  <IconButton 
-                    component="a"
-                    title="Source code" 
-                    aria-label="Source code" 
-                    color="inherit"
-                    href="https://github.com/MurphyAdam/Notebookz"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    >
-                    <CodeIcon />
-                  </IconButton>
-                  <IconButton 
-                    component="a"
-                    title="LinkedIn" 
-                    aria-label="LinkedIn" 
-                    color="inherit"
-                    href="https://www.linkedin.com/in/majdi-mahfoud-258461198/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    >
-                    <LinkedInIcon />
-                  </IconButton>
-                  <IconButton 
-                    component="a"
-                    title="Email" 
-                    aria-label="Email" 
-                    color="inherit"
-                    href="mailto:langandcode@gmail.com" 
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    >
-                    <MailIcon />
-                  </IconButton>
-                </CardContent>
-                <CardMedia
-                  className={classes.cardMedia}
-                  image="https://res.cloudinary.com/lang-code/image/upload/v1599217214/images/music_icon_tkqdsq.png"
-                  title="Notebookz"
-                />
-              </Card>
-            </div>
+            <Grid container component="main" component={Paper}>
+              <Grid item xs={12} sm={6} md={6}>
+                <div>
+                  <Card className={classes.card}>
+                    <CardContent>
+                      <Typography 
+                        variant="h5" 
+                        gutterBottom
+                      >
+                        Conmentarium, a simple notebook for all ideas.
+                      </Typography>
+                      <Typography 
+                        variant="subtitle2" 
+                        color="textSecondary"
+                        paragraph>
+                        Minimalistic notebook app built with React + Material-UI, and served with Flask. Star, 
+                        fork or contribute if you wish so. 
+                        <a href="https://github.com/MurphyAdam" 
+                          target="_blank"
+                          rel="noopener noreferrer" 
+                          className={classes.a}> By: @GitHub/MurphyAdam (Majdi)
+                        </a>
+                      </Typography>
+                      <IconButton 
+                        component="a"
+                        title="GitHub" 
+                        aria-label="GitHub" 
+                        color="inherit"
+                        href="https://github.com/MurphyAdam"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >
+                        <GitHubIcon />
+                      </IconButton>
+                      <IconButton 
+                        component="a"
+                        title="Source code" 
+                        aria-label="Source code" 
+                        color="inherit"
+                        href="https://github.com/MurphyAdam/Conmentarium"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >
+                        <CodeIcon />
+                      </IconButton>
+                      <IconButton 
+                        component="a"
+                        title="LinkedIn" 
+                        aria-label="LinkedIn" 
+                        color="inherit"
+                        href="https://www.linkedin.com/in/majdi-mahfoud-258461198/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >
+                        <LinkedInIcon />
+                      </IconButton>
+                      <IconButton 
+                        component="a"
+                        title="Email" 
+                        aria-label="Email" 
+                        color="inherit"
+                        href="mailto:langandcode@gmail.com" 
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >
+                        <MailIcon />
+                      </IconButton>
+                    </CardContent>
+                    <CardMedia
+                      className={classes.cardMedia}
+                      image="https://res.cloudinary.com/lang-code/image/upload/v1600369514/images/notes_lkh985.png"
+                      title="Conmentarium"
+                    />
+                  </Card>
+                </div>
+              </Grid>
+              <React.Suspense fallback={'loading...'}>
+                <AuthComponent />
+              </React.Suspense>
+            </Grid>
           </React.Fragment>
           :
           <React.Fragment>
             <WatchLaterIcon />
-            <Notebookz notebook={notebook}/>
+            <Conmentarium notebook={notebook}/>
             <FavoriteIcon />
-            <Notebookz notebook={notebook}/>
+            <Conmentarium notebook={notebook}/>
             <DeleteIcon />
-            <Notebookz notebook={[]}/>
+            <Conmentarium notebook={[]}/>
           </React.Fragment>
         }
 		</React.Fragment>
@@ -196,10 +215,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-  loadUser: () => dispatch(getCurrentUser()),
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default connect(mapStateToProps)(Home);

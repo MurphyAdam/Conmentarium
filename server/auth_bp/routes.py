@@ -14,10 +14,10 @@ from server.schemas import user_schema
 def signin():
     if request.method == "POST":
         json_data = request.get_json()
-        username = json_data.get("username")
+        email_or_username = json_data.get("emailOrUsername")
         password = json_data.get("password")
         remember_me = json_data.get("rememberMe")
-        validate = signin_validator(username, password)
+        validate = signin_validator(email_or_username, password)
         """
         signin_validator() method validates user signin credits.
         if validation is a success, it returns three objects:

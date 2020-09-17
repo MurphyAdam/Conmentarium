@@ -37,6 +37,7 @@ class User(UserMixin, db.Model):
     __table_args__ = {'extend_existing': True}
     id = db.Column('id',db.Integer , primary_key=True)
     username = db.Column('username', db.String(), unique=False , index=True)
+    email = db.Column('email',db.String(),unique=True , index=True)
     password = db.Column('password' , db.String())
     registered_on = db.Column('registered_on' , db.DateTime(timezone=True), server_default=func.now())
     notes = db.relationship('Notes', backref='author', lazy='dynamic', cascade="all, delete-orphan")

@@ -21,13 +21,13 @@ import logo from '../../assets/images/logo.png';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    marginBottom: theme.spacing(10),
+    marginBottom: theme.spacing(5),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
   },
   paper: {
-    margin: theme.spacing(4, 4),
+    margin: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(1),
   },
   submit: {
-    margin: theme.spacing(3, 0, 2),
+    margin: theme.spacing(2, 0, 0),
   },
 }));
 
@@ -52,106 +52,66 @@ const SignIn = (props) => {
   const classes = useStyles();
   const [emailOrUsername, setEmailOrUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
 
   const performLogin = e => {
     e.preventDefault();
-    login({emailOrUsername, password, rememberMe});
+    login({emailOrUsername, password});
   };
-
-  const handleSwithButtonChange = e => setRememberMe(e.target.checked);
 
   const isEnabledToSubmit = emailOrUsername.length >= 4 && password.length >= 8;
 
   return (
-    <Grid container component="main" className={classes.root}>
-      <Grid item xs={12} sm={8} md={5} component={Paper} elevation={4} square>
-        <div className={classes.paper}>
-          <Avatar className={classes.avatar} src={logo} >
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign in
-          </Typography>
-          <form className={classes.form} noValidate>
-            <Grid container spacing={1}>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="emailOrUsername"
-                  label="Email or Username"
-                  name="emailOrUsername"
-                  value={emailOrUsername}
-                  onChange={({ target: { value } }) => setEmailOrUsername(value)}
-                  autoComplete="email"
-                  autoFocus
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  value={password}
-                  onChange={({ target: { value } }) => setPassword(value)}
-                  id="password"
-                  autoComplete="current-password"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={rememberMe}
-                      color="secondary"
-                      onChange={handleSwithButtonChange}
-                      name="Remember me"
-                      inputProps={{ 'aria-label': 'Remember (default: false)' }}
-                    />
-                  }
-                  label="Remember Me"
-                  labelPlacement="start"
-                  value={rememberMe}
-                />
+    <Grid item xs={12} sm={6} md={6}>
+      <div className={classes.paper}>
+        <form className={classes.form} noValidate>
+          <Grid container spacing={1}>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id="emailOrUsername"
+                label="Email or Username"
+                name="emailOrUsername"
+                value={emailOrUsername}
+                onChange={({ target: { value } }) => setEmailOrUsername(value)}
+                autoComplete="email"
+                autoFocus
+              />
             </Grid>
-          </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              onClick={performLogin}
-              disabled={!isEnabledToSubmit || currentUser.isLoading}
-              color="secondary"
-              className={classes.submit}
-            >
-            {!currentUser.isLoading
-              ? "Sign in" : "Signing in..."
-            }
-            </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link component={RouterLink} color="secondary"
-                  to="/auth/reset_password_request" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link component={RouterLink} color="secondary"
-                  to="/auth/signup" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                value={password}
+                onChange={({ target: { value } }) => setPassword(value)}
+                id="password"
+                autoComplete="current-password"
+              />
             </Grid>
-          </form>
-        </div>
-      </Grid>
+        </Grid>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            onClick={performLogin}
+            disabled={!isEnabledToSubmit || currentUser.isLoading}
+            color="secondary"
+            className={classes.submit}
+          >
+          {!currentUser.isLoading
+            ? "Sign in" : "Signing in..."
+          }
+          </Button>
+
+        </form>
+      </div>
     </Grid>
   );
 }

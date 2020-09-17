@@ -22,19 +22,20 @@ def is_valid_username(username):
     else:
         return False
 
-def signin_validator(username, password):
+def signin_validator(email_or_username, password):
     errors = list()
-    if username and checkers.is_string(username):
-        user = User.query.filter(User.username==username).first()
+    if email_or_username and checkers.is_string(email_or_username):
+        user = User.query.filter(
+            (User.email == email_or_username) | 
+            (User.username == email_or_username)
+            ).first()
         if user:
-            if user.check_password(password):
+            if not user.check_password(password):
                 pass
-            else:
-                errors.append("Password is incorrect.")
         else:
-            errors.append("No account with this username exists.")
+            errors.append("No account with this email/ username exists.")
     else:
-        errors.append("Username is invalid")
+        errors.append("Email or password is invalid")
     if len(errors) == 0:
         return True, errors, user
     if len(errors) > 0:

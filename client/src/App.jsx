@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
 import Header from './components/Header/Header';
 import Home from './containers/Home';
 import { MuiThemeProvider, createMuiTheme, makeStyles } from '@material-ui/core/styles';
 import config from './config';
+import Notifications from 'react-notification-system-redux';
+import { connect } from 'react-redux';
+import { getCurrentUser } from './redux/actions/auth';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,8 +23,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function App() {
+//Optional styling
+const UINotificationsStyle = {
+  NotificationItem: { // Override the notification item
+    DefaultStyle: { // Applied to every notification, regardless of the notification level
+      margin: '5px 5px 2px 1px'
+    },
+  }
+};
 
+function App(props) {
+
+  const { loadUser, isAuthenticated, 
+    notifications } = {...props};
   const classes = useStyles();
   const theme = createMuiTheme({
     palette: {
@@ -36,15 +50,37 @@ function App() {
     },
   });
 
+  useEffect(() => {
+    if(!isAuthenticated) loadUser();
+    // eslint-disable-next-line
+  }, [isAuthenticated]);
+
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
       <Grid component="main" className={classes.root}>
         <Header />
+        <Notifications
+          notifications={notifications}
+          style={UINotificationsStyle}
+        />
         <Home />
       </Grid>
     </MuiThemeProvider>
   );
 }
 
-export default App;
+const mapStateToProps = (state) => {
+  return {
+    isAuthenticated: state.auth.currentUser.authenticated,
+    notifications: state.notifications,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    loadUser: () => dispatch(getCurrentUser()),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
