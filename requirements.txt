@@ -6,3 +6,7 @@ Flask-Migrate
 Flask-SQLAlchemy
 Flask-SeaSurf
 Flask-Cors
+psycopg2
+psycopg2
+python-dotenv
+validator-collection
