@@ -10,3 +10,4 @@ psycopg2
 psycopg2
 python-dotenv
 validator-collection
+marshmallow
