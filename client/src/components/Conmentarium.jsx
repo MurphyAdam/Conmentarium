@@ -6,7 +6,6 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import NoteBookCard from '../components/NoteBookCard';
-import NoteAddIcon from '@material-ui/icons/NoteAdd';
 import IconButton from '@material-ui/core/IconButton';
 
 const useStyles = makeStyles((theme) => ({
@@ -55,11 +54,6 @@ const Conmentarium = (props) => {
 											{"No notes in this category"}
 											</Typography>
 										</CardContent>
-										<CardActions>
-											<IconButton>
-												<NoteAddIcon />
-											</IconButton>
-										</CardActions>
 									</Card>
 								</Grid>
 							</Grid>

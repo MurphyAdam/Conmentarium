@@ -1,23 +1,13 @@
 import React, { useState } from 'react';
-import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Link from '@material-ui/core/Link';
-import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
-import Switch from '@material-ui/core/Switch';
 import { connect } from 'react-redux';
-import { Link as RouterLink } from 'react-router-dom';
 import { authenticate } from '../../redux/actions/auth';
 import { changeDocumentTitle } from '../../util/methods';
 import PropTypes from 'prop-types';
-
-import logo from '../../assets/images/logo.png';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,14 +31,14 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(1),
   },
   submit: {
-    margin: theme.spacing(2, 0, 0),
+    margin: theme.spacing(2, 0),
   },
 }));
 
 const SignIn = (props) => {
 
-  changeDocumentTitle("Lang&Code - Sign-in");
-  const { currentUser, login } = {...props};
+  changeDocumentTitle("Lang&Code - Sign in");
+  const { currentUser, login, setCurrentAuthOP } = {...props};
   const classes = useStyles();
   const [emailOrUsername, setEmailOrUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -109,7 +99,16 @@ const SignIn = (props) => {
             ? "Sign in" : "Signing in..."
           }
           </Button>
-
+          <Grid container>
+            <Grid item>
+              <Button 
+                color="secondary"
+                variant="body2" 
+                onClick={() => setCurrentAuthOP("SignUp")} >
+                Create an account instead?
+              </Button>
+            </Grid>
+          </Grid>
         </form>
       </div>
     </Grid>

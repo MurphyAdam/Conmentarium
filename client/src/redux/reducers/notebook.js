@@ -33,7 +33,7 @@ function notebook(state=INITIAL_STATE, action) {
 			}
 		case FETCH_NOTE_SUCCESS: {
 			return {...state,
-					notebook: concatArrayOfObjectsAndSortWithDate(state.notebook, action.payload?.notebook),
+					notebook: concatArrayOfObjectsAndSortWithDate(state.notebook, action.payload?.notes),
 					count: state.notebook.concat(action.payload?.notebook || []).length,
 					isLoading: false,
 					isLoaded: true, 

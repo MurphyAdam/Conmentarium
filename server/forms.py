@@ -31,7 +31,7 @@ def signin_validator(email_or_username, password):
             ).first()
         if user:
             if not user.check_password(password):
-                pass
+                errors.append("Password is incorrect.")
         else:
             errors.append("No account with this email/ username exists.")
     else:
@@ -67,7 +67,7 @@ def notes_validator(title,
             pass
         else:
             errors.append("Title is invalid. Must be a string of 1 characters minimum.")        
-    if body and not is_empty(title, minimum=1):
+    if body and not is_empty(body, minimum=1):
         pass
     else:
         errors.append("Body is invalid: must be 1 characters minimum.")

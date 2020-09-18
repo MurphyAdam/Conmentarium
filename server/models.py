@@ -48,6 +48,22 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
+    def generate_confirmation_token(self, expiration=3600):
+        s = Serializer(current_app.config['SECRET_KEY'], expiration)
+        return s.dumps({'confirm': self.id})
+
+    def confirm(self, token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except:
+            return False
+        if data.get('confirm') != self.id:
+            return False
+        self.confirmed = True
+        db.session.add(self)
+        return True
+
     def avatar(self, size=128):
         return 'https://www.gravatar.com/avatar/?d=monsterid&s={}'.format(size)
 
@@ -56,7 +72,7 @@ class User(UserMixin, db.Model):
         return {'avatar': self.avatar(128)}
 
     def get_notes(self):
-        notes = self.notes.all().limit(50)
+        notes = self.notes.limit(50).all()
         return notes
 
     def get_note(self, note_id):

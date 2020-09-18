@@ -11,7 +11,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import IconButton from '@material-ui/core/IconButton';
 import NoteIcon from '@material-ui/icons/Note';
 import DoneIcon from '@material-ui/icons/Done';
-import { updateNote } from '../services/note-api';
+import { createNote } from '../services/note-api';
 
 import { useDispatch } from 'react-redux';
 import { error as notificationError, 
@@ -56,45 +56,44 @@ const noteColors = [
 
 export default function EditNote(props) {
 
-	const { note, handleToggleActions } = {...props};
   const dispatch = useDispatch();
   const classes = useStyles();
-  const [noteUpdate, setNoteUpdate] = useState(
-  	{
-      id: note.id,
-  		title: note.title, 
-  		body: note.body, 
-  		color: note.color, 
-  		tags: note.tags
-  	});
+  const [note, setNote] = useState(
+    {
+      title: null, 
+      body: null, 
+      color: null, 
+      tags: null
+    });
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async event => {
     event.preventDefault();
     setIsLoading(true);
     try {
-      const response = await updateNote(noteUpdate);
+      const response = await createNote(note);
       dispatch(notificationSuccess({...notificationTemplate, 
-            'title': response.data.message || "Note updated successfully", 
+            'title': response.data.message || "Note added successfully", 
             'autoDismiss': 0,
           }));
     } catch (error) {
         dispatch(notificationError({'title': error.response.data.message || 
           error.request.statusText,
           'autoDismiss': 0,
-          'message': `Failed to edit note`,
+          'message': `Failed to add note`,
+          'children': notificationTemplate.renderArray(error.response?.data?.errors),
         }));
     }
     setIsLoading(false);
   }
 
   const handleColorChange = color => {
-    setNoteUpdate(noteUpdate => ({ ...noteUpdate, color: color }));
+    setNote(note => ({ ...note, color: color }));
   };
 
   const handleFieldChange = event => {
     const { name, value } = event.target;
-    setNoteUpdate(noteUpdate => ({ ...noteUpdate, [name]: value }));
+    setNote(note => ({ ...note, [name]: value }));
 	}
 
   const Circle = (props) => {
@@ -108,7 +107,7 @@ export default function EditNote(props) {
   }
 
 return (
-	<Card className={classes.card} style={{background: noteUpdate.color ? noteUpdate.color : null}}>
+	<Card className={classes.card} style={{background: note.color ? note.color : null}}>
     <form className={classes.root} noValidate autoComplete="off">
       <div>
         <TextField
@@ -117,7 +116,7 @@ return (
           name="title"
           multiline
           rowsMax={2}
-          value={noteUpdate.title}
+          value={note.title}
           onChange={handleFieldChange}
           variant="filled"
         />
@@ -127,7 +126,7 @@ return (
           name="body"
           multiline
           rowsMax={10}
-          value={noteUpdate.body}
+          value={note.body}
           onChange={handleFieldChange}
           variant="filled"
         />
@@ -137,7 +136,7 @@ return (
           name="tags"
           multiline
           rowsMax={2}
-          value={noteUpdate.tags}
+          value={note.tags}
           onChange={handleFieldChange}
           variant="filled"
         />
@@ -153,16 +152,7 @@ return (
       </div>
     </form>
 		<CardActions>
-			<IconButton onClick={() => handleToggleActions("toggleDisplay")}>
-				<NoteIcon />
-			</IconButton>
-			<IconButton>
-				<DeleteForeverIcon />
-			</IconButton>
-			<IconButton onClick={() => handleToggleActions("toggleEdit")}>
-				<EditIcon />
-			</IconButton>
-      <IconButton onClick={handleSubmit} disabled={isLoading}>
+      <IconButton onClick={handleSubmit}>
         <DoneIcon />
       </IconButton>
 		</CardActions>

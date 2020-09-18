@@ -6,13 +6,14 @@ from server.schemas import note_schema, notes_schema
 from server.forms import notes_validator
 from server.functions import is_empty
 from server.models import Notes, Tag
+from server import db
 
 @api_bp.route("/handshake")
 def handshake():
     time = datetime.utcnow()
     return {
             "code": 200,
-            "message": "Hello, world!", 
+            "message": "Hello, honey. It's time for server handshake :-(", 
             "time": time,
         }, 200
 
@@ -28,6 +29,12 @@ def gp_notebook():
 				"success": True,
 				"notes": notes_schema.dump(notes),
 				}, 200
+		return {
+			"code": 200,
+			"message":"No Notes found", 
+			"success": True,
+			"notes": None,
+			}, 200
 	if request.method == "POST":
 		json_data = request.get_json()
 		title = json_data.get("title")
@@ -112,7 +119,7 @@ def gpd_notebooks(id):
 			tags = None
 		else:
 			tags = [note.tags.append(add_tags(tag.strip())) for tag in tags.split(",")]
-		current_user.update_note(note_id=id, title=title, body=body, color=color, tags_string=tags)
+		update_note = current_user.update_note(note_id=id, title=title, body=body, color=color, tags_string=tags)
 		db.session.commit()
 		if update_note:
 			return {

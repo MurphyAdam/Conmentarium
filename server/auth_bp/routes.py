@@ -9,14 +9,12 @@ from server import db
 from server.auth_bp import auth_bp
 from server.schemas import user_schema
 
-
 @auth_bp.route("/signin", methods=["POST"])
 def signin():
     if request.method == "POST":
         json_data = request.get_json()
         email_or_username = json_data.get("emailOrUsername")
         password = json_data.get("password")
-        remember_me = json_data.get("rememberMe")
         validate = signin_validator(email_or_username, password)
         """
         signin_validator() method validates user signin credits.
@@ -38,7 +36,7 @@ def signin():
                         "errors": validate[1],
                     }, 400
         user = validate[2]
-        login_user(user, remember=True if remember_me == True else False)
+        login_user(user, remember=True)
         return {
                     "code": 200,
                     "message":"successfully logged-in", 
@@ -77,7 +75,6 @@ def signup():
         add_user.set_password(password)
         db.session.add(add_user)
         db.session.commit()
-        verify_email(user=add_user)
         return {
                     "code": 200,
                     "message":"Your account was successfully created! \

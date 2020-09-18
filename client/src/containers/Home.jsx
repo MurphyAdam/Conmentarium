@@ -15,11 +15,14 @@ import IconButton from '@material-ui/core/IconButton';
 import WatchLaterIcon from '@material-ui/icons/WatchLater';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import DeleteIcon from '@material-ui/icons/Delete';
-import {fetchNotebook} from '../services/note-api';
+import NoteAddIcon from '@material-ui/icons/NoteAdd';
+import Divider from '@material-ui/core/Divider';
+import { getNotes } from '../redux/actions/notebook';
 import { connect } from 'react-redux';
 
 const SignIn = lazy(() => import('../components/Auth/SignIn'));
 const SignUp = lazy(() => import('../components/Auth/SignUp'));
+const AddNote = lazy(() => import('../components/AddNote'));
 
 export const useStyles = makeStyles((theme) => ({
   card: {
@@ -36,53 +39,11 @@ export const useStyles = makeStyles((theme) => ({
   a: {
     textDecoration: 'none',
     color: theme.palette.secondary.main
+  },
+  divider: {
+    margin: theme.spacing(1, 0, 2, 0),
   }
 }));
-
-const defaultNotebook = [
-  {
-    id: 1,
-    title: 'Gotta Get Up',
-    body: 'Harry Nilsson',
-    color: "rgb(76 175 80 / 22%)",
-    date: new Date(),
-    tags: "daily, work"
-  },
-  {
-    id: 2,
-    title: 'Brush teeth',
-    body: `Minimalistic notebook app built with React + Material-UI, and served with Flask. Star, 
-              fork or contribute if you wish so. Minimalistic notebook app built with React + Material-UI, and served with Flask. Star, 
-              fork or contribute if you wish so. `,
-    color: "rgb(156 39 176 / 33%)",
-    date: new Date(),
-    tags: "daily, teeth"
-  },
-  {
-    id: 3,
-    title: 'Have breakfast',
-    body: 'Have breakfast with bluh',
-    color: "rgb(233 30 99 / 53%)",
-    date: new Date(),
-    tags: "daily, food"
-  },
-  {
-    id: 4,
-    title: 'Code project',
-    body: 'Add new features and bugs',
-    color: "rgb(0 150 136 / 35%)",
-    date: new Date(),
-    tags: "code, work"
-  },
-  {
-    id: 5,
-    title: 'Kill myself',
-    body: 'The end',
-    color: "#ff572275",
-    date: new Date(),
-    tags: "plans, goals"
-  },
-];
 
 const mapLazyComponents = {
   SignIn: SignIn,
@@ -92,29 +53,29 @@ const mapLazyComponents = {
 
 const Home = (props) => {
 	
-  const { isAuthenticated } = {...props};
+  const { isAuthenticated, notebook, loadNotes } = {...props};
 	const classes = useStyles();
-  const [notebook, setNotebook] = useState([]);
-  const [authAction, setAuthAction] = useState();
   const [currentAuthOP, setCurrentAuthOP] = useState("SignIn");
+  const [displayAddNoteComponent, setDisplayAddNoteComponent] = useState(false);
   const AuthComponent = mapLazyComponents[currentAuthOP];
 
-  useEffect(() => {
-    try {
-      const response = fetchNotebook();
-      setNotebook(response.data.notes)
-    } catch (error) {
-      console.log(error)
-      setNotebook(defaultNotebook);
-    }
-  }, [])
+  useEffect(
+    () => {
+      console.log("notebook =>", notebook)
+      if (!notebook.notebook.length && 
+          !notebook.isLoading && 
+          !notebook.isError &&
+          notebook.count === 0) loadNotes()
+    }, 
+    [isAuthenticated, notebook, loadNotes]
+  );
 
 	return (
 		<React.Fragment>
         {!isAuthenticated
           ?
           <React.Fragment>
-            <Grid container component="main" component={Paper}>
+            <Grid container component={Paper}>
               <Grid item xs={12} sm={6} md={6}>
                 <div>
                   <Card className={classes.card}>
@@ -191,14 +152,26 @@ const Home = (props) => {
                 </div>
               </Grid>
               <React.Suspense fallback={'loading...'}>
-                <AuthComponent />
+                <AuthComponent setCurrentAuthOP={setCurrentAuthOP} />
               </React.Suspense>
             </Grid>
           </React.Fragment>
           :
           <React.Fragment>
+            <IconButton>
+              <NoteAddIcon onClick={() => setDisplayAddNoteComponent(!displayAddNoteComponent)}/>
+            </IconButton>
+            <Divider className={classes.divider} />
+            {displayAddNoteComponent &&
+              <React.Fragment>
+                <React.Suspense fallback={'loading...'}>
+                  <AddNote setCurrentAuthOP={setCurrentAuthOP} />
+                </React.Suspense>
+                <Divider className={classes.divider} />
+              </React.Fragment>
+            }
             <WatchLaterIcon />
-            <Conmentarium notebook={notebook}/>
+            <Conmentarium notebook={notebook.notebook}/>
             <FavoriteIcon />
             <Conmentarium notebook={notebook}/>
             <DeleteIcon />
@@ -212,7 +185,14 @@ const Home = (props) => {
 const mapStateToProps = (state) => {
   return {
     isAuthenticated: state.auth.currentUser.authenticated,
+    notebook: state.notebook,
   };
 };
 
-export default connect(mapStateToProps)(Home);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    loadNotes: () => dispatch(getNotes()),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
