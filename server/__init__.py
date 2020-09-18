@@ -17,7 +17,7 @@ cors = CORS()
 login_manager.needs_refresh_message = (
     u"To protect your account, please reauthenticate (sign-out then sign-in) to access this page.")
 
-def create_app(config_class=Development):
+def create_app(config_class=Config):
     """Construct the core application."""
     app = Flask(__name__, static_folder='../client/build/static', 
         instance_relative_config=False)
