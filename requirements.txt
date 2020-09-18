@@ -11,3 +11,4 @@ psycopg2
 python-dotenv
 validator-collection
 marshmallow
+PyJWT
