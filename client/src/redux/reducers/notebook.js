@@ -1,18 +1,13 @@
 import { FETCH_NOTE,
 	FETCH_NOTE_SUCCESS, 
 	FETCH_NOTE_FAILURE,
+	REFETCH_NOTE_SUCCESS,
 	DELETE_NOTE,
 	DELETE_NOTE_SUCCESS,
 	DELETE_NOTE_FAILURE,
 	 } from '../constants/notebook';
 import { INITIATE_AUTH_CLEANUP } from '../constants/auth';
 import { removeItemFromArray } from '../methods';
-
-export function concatArrayOfObjectsAndSortWithDate(array, newArrayOfObjects=[]) {
-	const newArray = [...array, ...newArrayOfObjects]
-	newArray.sort((a, b) => new Date(b.date) - new Date(a.date))
-	return newArray
-}
 
 const INITIAL_STATE = {
 		notebook: [],
@@ -33,8 +28,8 @@ function notebook(state=INITIAL_STATE, action) {
 			}
 		case FETCH_NOTE_SUCCESS: {
 			return {...state,
-					notebook: concatArrayOfObjectsAndSortWithDate(state.notebook, action.payload?.notes),
-					count: state.notebook.concat(action.payload?.notebook || []).length,
+					notebook: action.payload?.notes,
+					count: (action.payload?.notebook || []).length,
 					isLoading: false,
 					isLoaded: true, 
 					isError: false, 
@@ -51,6 +46,12 @@ function notebook(state=INITIAL_STATE, action) {
 
 				}
 			}
+		case REFETCH_NOTE_SUCCESS: {
+			return {...state, 
+					notebook: action.payload?.notes || state.notebook,
+					count: (action.payload?.notes || state.notebook).length,
+			}
+		}
 		case DELETE_NOTE: {
 			return {...INITIAL_STATE, 
 					isLoading: true
@@ -59,7 +60,7 @@ function notebook(state=INITIAL_STATE, action) {
 		case DELETE_NOTE_SUCCESS: {
 			return {...state,
 					notebook: removeItemFromArray(state.notebook, action.payload?.note_id),
-					count: state.notebook.concat(action.payload?.notebook || []).length,
+					count: (action.payload?.notebook || []).length,
 					isLoading: false,
 					isLoaded: true, 
 					isError: false, 

@@ -6,10 +6,7 @@ import TextField from '@material-ui/core/TextField';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 
 import CardActions from '@material-ui/core/CardActions';
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-import EditIcon from '@material-ui/icons/Edit';
 import IconButton from '@material-ui/core/IconButton';
-import NoteIcon from '@material-ui/icons/Note';
 import DoneIcon from '@material-ui/icons/Done';
 import { createNote } from '../services/note-api';
 
@@ -17,6 +14,7 @@ import { useDispatch } from 'react-redux';
 import { error as notificationError, 
   success as notificationSuccess } from 'react-notification-system-redux';
 import { notificationTemplate } from '../redux/methods';
+import { setNote as addNote } from '../redux/actions/notebook';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -51,11 +49,13 @@ const noteColors = [
 	"rgb(0 150 136 / 35%)",
 	"#ff572275",
 	"rgb(33 150 243 / 34%)",
-	"#ffeb3b4d"
+	"#ffeb3b4d",
+  "rgb(103 58 183 / 45%)"
 ];
 
 export default function EditNote(props) {
 
+  const { setDisplayAddNoteComponent } = {...props};
   const dispatch = useDispatch();
   const classes = useStyles();
   const [note, setNote] = useState(
@@ -72,6 +72,8 @@ export default function EditNote(props) {
     setIsLoading(true);
     try {
       const response = await createNote(note);
+      setDisplayAddNoteComponent(false);
+      dispatch(addNote(response.data.note));
       dispatch(notificationSuccess({...notificationTemplate, 
             'title': response.data.message || "Note added successfully", 
             'autoDismiss': 0,
@@ -152,7 +154,7 @@ return (
       </div>
     </form>
 		<CardActions>
-      <IconButton onClick={handleSubmit}>
+      <IconButton onClick={handleSubmit} disabled={isLoading}>
         <DoneIcon />
       </IconButton>
 		</CardActions>

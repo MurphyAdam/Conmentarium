@@ -61,8 +61,8 @@ const Home = (props) => {
 
   useEffect(
     () => {
-      console.log("notebook =>", notebook)
-      if (!notebook.notebook.length && 
+      if (isAuthenticated &&
+          !notebook.notebook.length && 
           !notebook.isLoading && 
           !notebook.isError &&
           notebook.count === 0) loadNotes()
@@ -158,14 +158,15 @@ const Home = (props) => {
           </React.Fragment>
           :
           <React.Fragment>
-            <IconButton>
+            <IconButton onClick={() => setDisplayAddNoteComponent(!displayAddNoteComponent)}>
               <NoteAddIcon onClick={() => setDisplayAddNoteComponent(!displayAddNoteComponent)}/>
             </IconButton>
             <Divider className={classes.divider} />
             {displayAddNoteComponent &&
               <React.Fragment>
                 <React.Suspense fallback={'loading...'}>
-                  <AddNote setCurrentAuthOP={setCurrentAuthOP} />
+                  <AddNote setCurrentAuthOP={setCurrentAuthOP} 
+                    setDisplayAddNoteComponent={setDisplayAddNoteComponent} />
                 </React.Suspense>
                 <Divider className={classes.divider} />
               </React.Fragment>

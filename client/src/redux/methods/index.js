@@ -73,13 +73,39 @@ export function updateObjectInArrayWithName(array, newItem) {
 
 export function concatArrayOfObjectsAndSortWithDateAsc(array, newArrayOfObjects=[]) {
 	const newArray = [...array, ...newArrayOfObjects]
-	newArray.sort((a, b) => new Date(b.date) - new Date(a.date))
+	newArray.sort(function(a, b) {
+		if(a.date_updated && b.date_updated) {
+			return new Date(b.date_updated) - new Date(a.date_updated)
+		}
+		else if(a.date_created && b.date_created) {
+			return new Date(b.date_created) - new Date(a.date_created)
+		}
+		else if(a.date && b.date) {
+			return new Date(b.date) - new Date(a.date)
+		}
+		else {
+			return a - b
+		}
+	})
 	return newArray
 }
 
 export function concatArrayOfObjectsAndSortWithDateDesc(array, newArrayOfObjects=[]) {
 	const newArray = [...array, ...newArrayOfObjects]
-	newArray.sort((a, b) => new Date(a.date) - new Date(b.date))
+	newArray.sort(function(a, b) {
+		if(a.date_updated && b.date_updated) {
+			return new Date(a.date_updated) - new Date(b.date_updated)
+		}
+		else if(a.date_created && b.date_created) {
+			return new Date(a.date_created) - new Date(b.date_created)
+		}
+		else if(a.date && b.date) {
+			return new Date(a.date) - new Date(b.date)
+		}
+		else {
+			return a - b
+		}
+	})
 	return newArray
 }
 
@@ -87,7 +113,7 @@ export const notificationTemplate = {
   title: '',
   message: '',
   position: 'bc',
-  autoDismiss: 8,
+  autoDismiss: 2,
   renderArray: (arr=[]) => (
     <ul>
       {arr.map(el => (

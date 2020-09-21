@@ -52,30 +52,30 @@ def gp_notebook():
 				"success": False,
 				"errors": validate[1],
 				}, 400
-		if is_empty(tags, minimum=2):
-			tags = None
-		else:
-			tags = [notes.tags.append(add_tags(tag.strip())) for tag in tags.split(",")]
 		note = Notes(
 			user_id=current_user.id, 
 			title=title, 
 			body=body, 
 			color=color,
 			tags_string=tags)
+		if is_empty(tags, minimum=2):
+			tags = None
+		else:
+			tags = [note.tags.append(add_tags(tag.strip())) for tag in tags.split(",")]
 		db.session.add(note)
 		db.session.commit()
 		if note:
 			return {"code": 200,
 				"message":"Note added successfully!", 
 				"success": True,
-				"note_id": note.id
+				"note": note_schema.dump(note),
 				}, 200
 		return {    
 			"code": 400,
 			"message":"Could not add to database. "
 			"Might be an enternal error. Please try again later.", 
 			"success": False,
-			"note_id": None
+			"note": None
 			}, 400
 
 @api_bp.route('/notebook/<int:id>', methods=["GET", "PUT", "DELETE"])
@@ -87,8 +87,7 @@ def gpd_notebooks(id):
       "code": 404,
       "message":"note with that id was not found", 
       "success": False,
-      "category":"is-warning",
-      "note_id": id, 
+      "note": None, 
   }, 404
 	if request.method == "GET":
 		if note:
@@ -115,11 +114,11 @@ def gpd_notebooks(id):
 				"success": False,
 				"errors": validate[1],
 				}, 400
+		update_note = current_user.update_note(note_id=id, title=title, body=body, color=color, tags_string=tags)
 		if is_empty(tags, minimum=2):
 			tags = None
 		else:
 			tags = [note.tags.append(add_tags(tag.strip())) for tag in tags.split(",")]
-		update_note = current_user.update_note(note_id=id, title=title, body=body, color=color, tags_string=tags)
 		db.session.commit()
 		if update_note:
 			return {
@@ -127,7 +126,7 @@ def gpd_notebooks(id):
 				"message":"Note updated successfully!", 
 				"success": True,
 				"category":"is-primary",
-				"note": note_schema.dump(note),
+				"note": note_schema.dump(update_note),
 				}, 200
 		return {
 			"code": 400,

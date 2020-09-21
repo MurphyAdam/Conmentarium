@@ -13,10 +13,12 @@ import NoteIcon from '@material-ui/icons/Note';
 import DoneIcon from '@material-ui/icons/Done';
 import { updateNote } from '../services/note-api';
 
-import { useDispatch } from 'react-redux';
+import {connect} from 'react-redux';
 import { error as notificationError, 
   success as notificationSuccess } from 'react-notification-system-redux';
 import { notificationTemplate } from '../redux/methods';
+import { refetchNote } from '../redux/actions/notebook';
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
   shape: {
     width: 30,
     height: 30,
+    margin: theme.spacing(0.5)
   },
   shapeCircle: {
     borderRadius: '25%',
@@ -51,13 +54,13 @@ const noteColors = [
 	"rgb(0 150 136 / 35%)",
 	"#ff572275",
 	"rgb(33 150 243 / 34%)",
-	"#ffeb3b4d"
+	"#ffeb3b4d",
+  "rgb(103 58 183 / 45%)"
 ];
 
-export default function EditNote(props) {
+function EditNote(props) {
 
-	const { note, handleToggleActions } = {...props};
-  const dispatch = useDispatch();
+	const { note, handleToggleActions, addNotification, refetchNote } = {...props};
   const classes = useStyles();
   const [noteUpdate, setNoteUpdate] = useState(
   	{
@@ -74,16 +77,16 @@ export default function EditNote(props) {
     setIsLoading(true);
     try {
       const response = await updateNote(noteUpdate);
-      dispatch(notificationSuccess({...notificationTemplate, 
+      refetchNote(note.id);
+      handleToggleActions("toggleDisplay");
+      addNotification({...notificationTemplate, 
             'title': response.data.message || "Note updated successfully", 
-            'autoDismiss': 0,
-          }));
+          }, notificationSuccess);
     } catch (error) {
-        dispatch(notificationError({'title': error.response.data.message || 
+        addNotification({'title': error.response.data.message || 
           error.request.statusText,
-          'autoDismiss': 0,
           'message': `Failed to edit note`,
-        }));
+        }, notificationError);
     }
     setIsLoading(false);
   }
@@ -169,3 +172,22 @@ return (
   </Card>
   );
 }
+
+EditNote.propTypes = {
+  note: PropTypes.object,
+  reloadText: PropTypes.func.isRequired,
+  addNotification: PropTypes.func.isRequired,
+};
+
+const mapStateToProps = (state) => {
+  return {
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    refetchNote: id => dispatch(refetchNote(id)),
+    addNotification: (data, level) => dispatch(level(data)),
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(EditNote);

@@ -134,7 +134,7 @@ class Notes(db.Model):
     tags = db.relationship('Tag',secondary=note_tag, 
                         back_populates="notes", single_parent=True, cascade="all, delete-orphan")
     date_created = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    date_updated = db.Column(db.DateTime, onupdate=datetime.utcnow)
+    date_updated = db.Column(db.DateTime, onupdate=datetime.utcnow, default=datetime.utcnow)
 
     def __repr__(self):
         return '<Notes %r>' % self.title

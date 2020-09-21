@@ -38,7 +38,7 @@ function PrimaryAppBar(props) {
                 color="inherit" 
                 variant="text"
                 className={classes.title}>
-                  Notebookz
+                  Conmentarium
               </Button>
           </Typography>
           <div className={classes.grow} />
