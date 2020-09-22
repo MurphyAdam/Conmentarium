@@ -22,7 +22,7 @@ import { connect } from 'react-redux';
 
 const SignIn = lazy(() => import('../components/Auth/SignIn'));
 const SignUp = lazy(() => import('../components/Auth/SignUp'));
-const AddNote = lazy(() => import('../components/AddNote'));
+const AddNote = lazy(() => import('../components/Note/AddNote'));
 
 export const useStyles = makeStyles((theme) => ({
   card: {

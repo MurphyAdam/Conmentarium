@@ -11,13 +11,14 @@ import EditIcon from '@material-ui/icons/Edit';
 import IconButton from '@material-ui/core/IconButton';
 import NoteIcon from '@material-ui/icons/Note';
 import DoneIcon from '@material-ui/icons/Done';
-import { updateNote } from '../services/note-api';
+import { updateNote } from '../../services/note-api';
 
 import {connect} from 'react-redux';
 import { error as notificationError, 
   success as notificationSuccess } from 'react-notification-system-redux';
-import { notificationTemplate } from '../redux/methods';
-import { refetchNote } from '../redux/actions/notebook';
+import { notificationTemplate } from '../../redux/methods';
+import { refetchNote } from '../../redux/actions/notebook';
+import { noteColors } from '../../constants';
 import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
@@ -47,17 +48,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const noteColors = [
-	"rgb(76 175 80 / 22%)",
-	"rgb(156 39 176 / 33%)",
-	"rgb(233 30 99 / 53%)",
-	"rgb(0 150 136 / 35%)",
-	"#ff572275",
-	"rgb(33 150 243 / 34%)",
-	"#ffeb3b4d",
-  "rgb(103 58 183 / 45%)"
-];
-
 function EditNote(props) {
 
 	const { note, handleToggleActions, addNotification, refetchNote } = {...props};
@@ -76,9 +66,13 @@ function EditNote(props) {
     event.preventDefault();
     setIsLoading(true);
     try {
+      // Api Call To Create Note
       const response = await updateNote(noteUpdate);
       refetchNote(note.id);
+      // The Request Was Fulffiled And The Note Was updated
+      // So Let's Hide The EditNote Component
       handleToggleActions("toggleDisplay");
+      // display notification for success
       addNotification({...notificationTemplate, 
             'title': response.data.message || "Note updated successfully", 
           }, notificationSuccess);

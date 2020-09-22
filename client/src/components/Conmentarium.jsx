@@ -4,7 +4,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import NoteBookCard from '../components/NoteBookCard';
+import NoteBookCard from './Note/NoteBookCard';
 
 const useStyles = makeStyles((theme) => ({
   icon: {

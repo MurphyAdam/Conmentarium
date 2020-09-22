@@ -8,13 +8,14 @@ import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import CardActions from '@material-ui/core/CardActions';
 import IconButton from '@material-ui/core/IconButton';
 import DoneIcon from '@material-ui/icons/Done';
-import { createNote } from '../services/note-api';
+import { createNote } from '../../services/note-api';
 
 import { useDispatch } from 'react-redux';
 import { error as notificationError, 
   success as notificationSuccess } from 'react-notification-system-redux';
-import { notificationTemplate } from '../redux/methods';
-import { setNote as addNote } from '../redux/actions/notebook';
+import { notificationTemplate } from '../../redux/methods';
+import { setNote as addNote } from '../../redux/actions/notebook';
+import { noteColors } from '../../constants';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -42,18 +43,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const noteColors = [
-	"rgb(76 175 80 / 22%)",
-	"rgb(156 39 176 / 33%)",
-	"rgb(233 30 99 / 53%)",
-	"rgb(0 150 136 / 35%)",
-	"#ff572275",
-	"rgb(33 150 243 / 34%)",
-	"#ffeb3b4d",
-  "rgb(103 58 183 / 45%)"
-];
-
-export default function EditNote(props) {
+function AddNote(props) {
 
   const { setDisplayAddNoteComponent } = {...props};
   const dispatch = useDispatch();
@@ -71,9 +61,15 @@ export default function EditNote(props) {
     event.preventDefault();
     setIsLoading(true);
     try {
+      // Api Call To Create Note
       const response = await createNote(note);
+      // The Request Was Fulffiled And The Note Was Created
+      // So Let's Hide The Addnote Component
       setDisplayAddNoteComponent(false);
+      // the response returns the created note
+      // we add it to our notebook
       dispatch(addNote(response.data.note));
+      // display notification for success
       dispatch(notificationSuccess({...notificationTemplate, 
             'title': response.data.message || "Note added successfully", 
             'autoDismiss': 0,
@@ -103,7 +99,7 @@ export default function EditNote(props) {
   	return (
   		<div className={clsx(classes.shape, classes.shapeCircle)} 
   				name="color"
-					style={{background: color ? color : 'red'}} 
+					style={{background: color ? color : null}} 
 					onClick={() => handleColorChange(color)} />
 			);
   }
@@ -161,3 +157,6 @@ return (
   </Card>
   );
 }
+
+
+export default AddNote;
