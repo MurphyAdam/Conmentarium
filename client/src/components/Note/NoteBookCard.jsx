@@ -12,6 +12,9 @@ import IconButton from '@material-ui/core/IconButton';
 import NoteIcon from '@material-ui/icons/Note';
 import LabelIcon from '@material-ui/icons/Label';
 import EditNote from './EditNote';
+import DialogWithCallback from '../Common/DialogWithCallback';
+import { deleteNote } from '../../redux/actions/notebook';
+import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -31,9 +34,11 @@ const useStyles = makeStyles((theme) => ({
 export default function NoteBookCard(props) {
 
 	const { note } = {...props};
+	const dispatch = useDispatch();
 	const classes = useStyles();
 	const [toggleDisplay, setToggleDisplay] = useState(false);
 	const [toggleEdit, setToggleEdit] = useState(false);
+	const [toggleDelete, setToggleDelete] = React.useState(false);
 
 	const handleToggleActions = (action) => {
 		if(action === "toggleEdit") {
@@ -48,7 +53,15 @@ export default function NoteBookCard(props) {
 				setToggleEdit(false);
 			}
 		}
+		if(action === "toggleDelete") {
+			setToggleDelete(!toggleDelete);
+			if(toggleEdit) {
+				setToggleEdit(false);
+			}
+		}
 	}
+
+	const handleDelete = () => dispatch(deleteNote(note.id));
 
 	return (
 		<Grid item key={note.id} xs={12} sm={6} md={4}>
@@ -80,8 +93,8 @@ export default function NoteBookCard(props) {
 						<IconButton onClick={() => handleToggleActions("toggleDisplay")}>
 							<NoteIcon />
 						</IconButton>
-						<IconButton>
-							<DeleteForeverIcon />
+						<IconButton onClick={() => handleToggleActions("toggleDelete")}>
+							<DeleteForeverIcon  onClick={() => handleToggleActions("toggleDelete")}/>
 						</IconButton>
 						<IconButton onClick={() => handleToggleActions("toggleEdit")}>
 							<EditIcon />
@@ -91,6 +104,14 @@ export default function NoteBookCard(props) {
 				:
 					<EditNote note={note} 
 						handleToggleActions={handleToggleActions} />
+			}
+			{toggleDelete &&
+				<DialogWithCallback 
+          actionCallback={() => handleDelete()}
+          actionName="Delete"
+          title="Delete note"
+          body={`Click delete to delete this note`}
+				/>
 			}
 		</Grid>
 	);

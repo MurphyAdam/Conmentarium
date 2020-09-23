@@ -25,17 +25,11 @@ const INITIAL_STATE = {
 		fresh: false,
 		isLoading: false,
 		isLoaded: false,
-		isError: false,
-		errors: [],
-		error: ''
 	},
 	userSubject: {
 		success: false,
 		isLoading: false,
 		isLoaded: false,
-		isError: false,
-		errors: [],
-		error: ''
 	}
 };
 
@@ -58,8 +52,6 @@ function auth(state=INITIAL_STATE, action) {
 					isLoaded: true, 
 					isLoading: false, 
 					fresh: true,
-					isError: false,
-					errors: []
 				}
 			}
 		}
@@ -77,8 +69,6 @@ function auth(state=INITIAL_STATE, action) {
 					isLoaded: true, 
 					isLoading: false, 
 					fresh: true,
-					isError: false,
-					errors: []
 				}
 			}
 		}
@@ -88,9 +78,6 @@ function auth(state=INITIAL_STATE, action) {
 					isLoading: true, 
 					isLoaded: false,
 					fresh: false,
-					isError: false,
-					error: '',
-					errors: []
 				}
 			}
 		}
@@ -102,22 +89,14 @@ function auth(state=INITIAL_STATE, action) {
 					isLoaded: true, 
 					isLoading: false, 
 					fresh: true,
-					isError: false,
-					errors: []
 				}
 			}
 		}
 		case USER_LOGIN_FAILURE: {
 			return {...state, 
 				currentUser: {...state.currentUser,
-					authenticated: false, 
-					user: null,
 					isLoaded: true, 
 					isLoading: false, 
-					fresh: false,
-					isError: true,
-					errors: action.payload.response?.data?.errors || [],
-					error: action.payload.request.statusText || action.payload.message
 				}
 			}
 		}
@@ -140,12 +119,8 @@ function auth(state=INITIAL_STATE, action) {
 		case USER_SIGNUP_FAILURE: {
 			return {...state, 
 				userSubject: {...INITIAL_STATE.userSubject,
-					success: false, 
 					isLoaded: true, 
 					isLoading: false, 
-					isError: true,
-					errors: action.payload.response?.data?.errors || [],
-					error: action.payload?.request?.statusText || action.payload?.message
 				}
 			}
 		}
@@ -156,13 +131,13 @@ function auth(state=INITIAL_STATE, action) {
 					isLoading: true, 
 					isLoaded: false,
 					fresh: false,
-					isError: false
 				}
 			}
 		}
 		case USER_LOGOUT_SUCCESS: {
 			return {...INITIAL_STATE,
 				currentUser:{...INITIAL_STATE.currentUser, 
+					isLoading: false, 
 					authenticated: false,
 					user: null
 				}
@@ -170,9 +145,9 @@ function auth(state=INITIAL_STATE, action) {
 		}
 		case USER_LOGOUT_FAILURE: {
 			return {...INITIAL_STATE,
-				currentUser:{...INITIAL_STATE.currentUser, 
-					authenticated: false,
-					user: null
+				currentUser:{...state.currentUser, 
+					isLoading: false, 
+					isLoaded: true
 				}
 			}
 		}

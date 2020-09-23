@@ -19,6 +19,7 @@ import NoteAddIcon from '@material-ui/icons/NoteAdd';
 import Divider from '@material-ui/core/Divider';
 import { getNotes } from '../redux/actions/notebook';
 import { connect } from 'react-redux';
+import CircularLoader from '../components/Common/Loaders';
 
 const SignIn = lazy(() => import('../components/Auth/SignIn'));
 const SignUp = lazy(() => import('../components/Auth/SignUp'));
@@ -64,8 +65,8 @@ const Home = (props) => {
       if (isAuthenticated &&
           !notebook.notebook.length && 
           !notebook.isLoading && 
-          !notebook.isError &&
-          notebook.count === 0) loadNotes()
+          !notebook.isLoaded &&
+          !notebook.isError) loadNotes()
     }, 
     [isAuthenticated, notebook, loadNotes]
   );
@@ -151,7 +152,7 @@ const Home = (props) => {
                   </Card>
                 </div>
               </Grid>
-              <React.Suspense fallback={'loading...'}>
+              <React.Suspense fallback={<CircularLoader />}>
                 <AuthComponent setCurrentAuthOP={setCurrentAuthOP} />
               </React.Suspense>
             </Grid>
@@ -164,7 +165,7 @@ const Home = (props) => {
             <Divider className={classes.divider} />
             {displayAddNoteComponent &&
               <React.Fragment>
-                <React.Suspense fallback={'loading...'}>
+                <React.Suspense fallback={<CircularLoader />}>
                   <AddNote setCurrentAuthOP={setCurrentAuthOP} 
                     setDisplayAddNoteComponent={setDisplayAddNoteComponent} />
                 </React.Suspense>

@@ -129,7 +129,6 @@ export function register(formData) {
 export function logout() {
 	return (dispatch) => {
 		dispatch(userLogoutRequest());
-		localStorage.removeItem('currentUser');
 		logoutCurrentUser()
 		.then((response) => {
 			if (response.status !== 200) {
@@ -138,6 +137,7 @@ export function logout() {
 			return response;
 		})
 		.then((response) => {
+			localStorage.removeItem('currentUser');
 			dispatch(userLogoutSuccess(response.data));
 			dispatch(notificationRemoveAll());
 			dispatch(initiateAuthCleanup());
@@ -146,7 +146,7 @@ export function logout() {
 			dispatch(userLogoutError(error));
 			dispatch(notificationError({'title': error.response.data.message || 
 				error.request.statusText,
-				'message': `Failed to sign up`,
+				'message': `Failed to logout up`,
 			}));
 		})
 	};

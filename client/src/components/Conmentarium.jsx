@@ -5,6 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import NoteBookCard from './Note/NoteBookCard';
+import Fade from '@material-ui/core/Fade';
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -36,7 +37,9 @@ const Conmentarium = (props) => {
 					<React.Fragment>
 						<Grid container className={classes.cardGrid} spacing={2}>
 							{notebook.map((note) => (
-								<NoteBookCard note={note} key={note.id}/>
+								<Fade in={true}>
+									<NoteBookCard note={note} key={note.id}/>
+								</Fade>
 							))}
 						</Grid>
 					</React.Fragment>

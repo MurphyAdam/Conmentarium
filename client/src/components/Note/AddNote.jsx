@@ -8,11 +8,10 @@ import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import CardActions from '@material-ui/core/CardActions';
 import IconButton from '@material-ui/core/IconButton';
 import DoneIcon from '@material-ui/icons/Done';
-import { createNote } from '../../services/note-api';
+import { createNoteService } from '../../services/note-api';
 
 import { useDispatch } from 'react-redux';
-import { error as notificationError, 
-  success as notificationSuccess } from 'react-notification-system-redux';
+import { error as notificationError } from 'react-notification-system-redux';
 import { notificationTemplate } from '../../redux/methods';
 import { setNote as addNote } from '../../redux/actions/notebook';
 import { noteColors } from '../../constants';
@@ -62,19 +61,15 @@ function AddNote(props) {
     setIsLoading(true);
     try {
       // Api Call To Create Note
-      const response = await createNote(note);
+      const response = await createNoteService(note);
       // The Request Was Fulffiled And The Note Was Created
       // So Let's Hide The Addnote Component
       setDisplayAddNoteComponent(false);
       // the response returns the created note
       // we add it to our notebook
       dispatch(addNote(response.data.note));
-      // display notification for success
-      dispatch(notificationSuccess({...notificationTemplate, 
-            'title': response.data.message || "Note added successfully", 
-            'autoDismiss': 0,
-          }));
     } catch (error) {
+        // display notification for error
         dispatch(notificationError({'title': error.response.data.message || 
           error.request.statusText,
           'autoDismiss': 0,

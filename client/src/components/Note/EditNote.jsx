@@ -11,12 +11,10 @@ import EditIcon from '@material-ui/icons/Edit';
 import IconButton from '@material-ui/core/IconButton';
 import NoteIcon from '@material-ui/icons/Note';
 import DoneIcon from '@material-ui/icons/Done';
-import { updateNote } from '../../services/note-api';
+import { updateNoteService } from '../../services/note-api';
 
 import {connect} from 'react-redux';
-import { error as notificationError, 
-  success as notificationSuccess } from 'react-notification-system-redux';
-import { notificationTemplate } from '../../redux/methods';
+import { error as notificationError } from 'react-notification-system-redux';
 import { refetchNote } from '../../redux/actions/notebook';
 import { noteColors } from '../../constants';
 import PropTypes from 'prop-types';
@@ -67,16 +65,13 @@ function EditNote(props) {
     setIsLoading(true);
     try {
       // Api Call To Create Note
-      const response = await updateNote(noteUpdate);
+      await updateNoteService(noteUpdate);
       refetchNote(note.id);
       // The Request Was Fulffiled And The Note Was updated
       // So Let's Hide The EditNote Component
       handleToggleActions("toggleDisplay");
-      // display notification for success
-      addNotification({...notificationTemplate, 
-            'title': response.data.message || "Note updated successfully", 
-          }, notificationSuccess);
     } catch (error) {
+        // display notification for error
         addNotification({'title': error.response.data.message || 
           error.request.statusText,
           'message': `Failed to edit note`,
