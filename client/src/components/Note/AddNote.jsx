@@ -51,7 +51,7 @@ function AddNote(props) {
     {
       title: null, 
       body: null, 
-      color: null, 
+      color: '#fff', 
       tags: null
     });
   const [isLoading, setIsLoading] = useState(false);

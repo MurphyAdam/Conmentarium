@@ -41,8 +41,16 @@ def signin_validator(email_or_username, password):
     if len(errors) > 0:
         return False, errors, None
 
-def signup_validator(username, password):
+def signup_validator(username, email, password):
     errors = list()
+    if email and checkers.is_email(email):
+        check_email = User.query.filter_by(email=email).first()
+        if not check_email:
+            pass
+        else:
+            errors.append("An account is already registred with this email.")
+    else:
+        errors.append("Email is invalid.")
     if username and checkers.is_string(username):
         user = User.query.filter(User.username==username).first()
         if user:

@@ -11,10 +11,12 @@ import EditIcon from '@material-ui/icons/Edit';
 import IconButton from '@material-ui/core/IconButton';
 import NoteIcon from '@material-ui/icons/Note';
 import LabelIcon from '@material-ui/icons/Label';
+import RestoreFromTrashIcon from '@material-ui/icons/RestoreFromTrash';
+import DeleteIcon from '@material-ui/icons/Delete';
 import EditNote from './EditNote';
 import DialogWithCallback from '../Common/DialogWithCallback';
-import { deleteNote } from '../../redux/actions/notebook';
-import { useDispatch } from 'react-redux';
+import { deleteNote, purgeNote, restoreTrashedNote } from '../../redux/actions/notebook';
+import { connect } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -31,10 +33,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function NoteBookCard(props) {
+function NoteBookCard(props) {
 
-	const { note } = {...props};
-	const dispatch = useDispatch();
+	const { note, type, deleteNote, purgeNote, restoreTrashedNote } = {...props};
 	const classes = useStyles();
 	const [toggleDisplay, setToggleDisplay] = useState(false);
 	const [toggleEdit, setToggleEdit] = useState(false);
@@ -60,8 +61,6 @@ export default function NoteBookCard(props) {
 			}
 		}
 	}
-
-	const handleDelete = () => dispatch(deleteNote(note.id));
 
 	return (
 		<Grid item key={note.id} xs={12} sm={6} md={4}>
@@ -90,15 +89,29 @@ export default function NoteBookCard(props) {
 						</Typography>
 					</CardContent>
 					<CardActions>
-						<IconButton onClick={() => handleToggleActions("toggleDisplay")}>
+						<IconButton onClick={() => handleToggleActions("toggleDisplay")} title="Display note">
 							<NoteIcon />
 						</IconButton>
-						<IconButton onClick={() => handleToggleActions("toggleDelete")}>
-							<DeleteForeverIcon  onClick={() => handleToggleActions("toggleDelete")}/>
-						</IconButton>
-						<IconButton onClick={() => handleToggleActions("toggleEdit")}>
-							<EditIcon />
-						</IconButton>
+						{type === "Trash"
+							?
+							<React.Fragment>
+								<IconButton onClick={() => restoreTrashedNote(note.id)} title="Restore note">
+									<RestoreFromTrashIcon />
+								</IconButton>
+								<IconButton onClick={() => purgeNote(note.id)} title="Purge note">
+									<DeleteForeverIcon />
+								</IconButton>
+							</React.Fragment>
+							:
+							<React.Fragment>
+								<IconButton onClick={() => handleToggleActions("toggleDelete")} title="Delete note">
+									<DeleteIcon  onClick={() => handleToggleActions("toggleDelete")}/>
+								</IconButton>
+								<IconButton onClick={() => handleToggleActions("toggleEdit")} title="Edit note">
+									<EditIcon />
+								</IconButton>
+							</React.Fragment>
+						}
 					</CardActions>
 				</Card>
 				:
@@ -107,7 +120,7 @@ export default function NoteBookCard(props) {
 			}
 			{toggleDelete &&
 				<DialogWithCallback 
-          actionCallback={() => handleDelete()}
+          actionCallback={() => deleteNote(note.id)}
           actionName="Delete"
           title="Delete note"
           body={`Click delete to delete this note`}
@@ -116,3 +129,21 @@ export default function NoteBookCard(props) {
 		</Grid>
 	);
 }
+
+const mapStateToProps = (state) => {
+  return {
+    isAuthenticated: state.auth.currentUser.authenticated,
+    notebook: state.notebook,
+    trashedNotes: state.notebook.trashedNotes,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    deleteNote: id => dispatch(deleteNote(id)),
+    purgeNote: id => dispatch(purgeNote(id)),
+    restoreTrashedNote: id => dispatch(restoreTrashedNote(id)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(NoteBookCard);

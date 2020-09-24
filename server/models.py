@@ -41,6 +41,7 @@ class User(UserMixin, db.Model):
     password = db.Column('password' , db.String())
     registered_on = db.Column('registered_on' , db.DateTime(timezone=True), server_default=func.now())
     notes = db.relationship('Notes', backref='author', lazy='dynamic', cascade="all, delete-orphan")
+    trashed_notes = db.relationship('Trash', backref='author', lazy='dynamic', cascade="all, delete-orphan")
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -92,6 +93,51 @@ class User(UserMixin, db.Model):
                 Notes.tags_string: tags_string
             })
 
+    def move_note_to_trash(self, note):
+        if note:
+            trashed_note = Trash(
+                user_id=self.id, 
+                title=note.title, 
+                body=note.body, 
+                color=note.color,
+                tags_string=note.tags_string)
+            db.session.add(trashed_note)
+            self.delete_note(note.id)
+            db.session.commit()
+            return trashed_note
+        return None
+
+    def restore_from_trash(self, note_id):
+        trashed_note = self.get_trashed_note(note_id)
+        if trashed_note:
+            note = Notes(
+                user_id=self.id, 
+                title=trashed_note.title, 
+                body=trashed_note.body, 
+                color=trashed_note.color,
+                tags_string=trashed_note.tags_string)
+            db.session.add(note)
+            self.delete_trashed_notes(note_id=note_id)
+            db.session.commit()
+            return note
+        return None
+
+    def get_trashed_notes(self):
+        notes = self.trashed_notes.limit(50).all()
+        return notes
+
+    def get_trashed_note(self, note_id):
+        return self.trashed_notes.filter_by(id=note_id).first()
+
+    def delete_trashed_notes(self, note_id=None, all=False):
+        if not note_id and not all:
+            return None
+        if note_id:
+            self.trashed_notes.filter_by(id=note_id).delete()
+        if all:
+            self.trashed_notes.delete()
+        db.session.commit()
+
     def is_authenticated(self):
         return True
 
@@ -136,5 +182,26 @@ class Notes(db.Model):
     date_created = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     date_updated = db.Column(db.DateTime, onupdate=datetime.utcnow, default=datetime.utcnow)
 
+    @property
+    def is_trash(self):
+        return False
+
     def __repr__(self):
         return '<Notes %r>' % self.title
+
+class Trash(db.Model):
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    title = db.Column(db.String)
+    body = db.Column(db.Text)
+    color = db.Column(db.String)
+    tags_string = db.Column(db.String())
+    date_created = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+
+    @property
+    def is_trash(self):
+        return True
+
+    def __repr__(self):
+        return '<Trash %r>' % self.title

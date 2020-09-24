@@ -17,14 +17,27 @@ class NoteSchema(Schema):
 	body = fields.String()
 	color = fields.String()
 	tags = fields.String(attribute='tags_string')
+	is_trash = fields.Bool()
 	date_created = fields.DateTime(dump_only=True)
 	date_updated = fields.DateTime(dump_only=True)
+
+class TrashSchema(Schema):
+	id = fields.Integer(dump_only=True)
+	title = fields.String()
+	body = fields.String()
+	color = fields.String()
+	tags = fields.String(attribute='tags_string')
+	is_trash = fields.Bool()
+	date_created = fields.DateTime(dump_only=True)
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 
 note_schema = NoteSchema()
 notes_schema = NoteSchema(many=True)
+
+trashed_note_schema = TrashSchema()
+trashed_notes_schema = TrashSchema(many=True)
 
 tag_schema = TagSchema()
 tags_schema = TagSchema(many=True)

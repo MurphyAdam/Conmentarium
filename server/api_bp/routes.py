@@ -2,10 +2,11 @@ from datetime import datetime
 from flask import request
 from flask_login import login_required, current_user
 from server.api_bp import api_bp
-from server.schemas import note_schema, notes_schema
+from server.schemas import (note_schema, notes_schema, 
+	trashed_note_schema, trashed_notes_schema)
 from server.forms import notes_validator
 from server.functions import is_empty
-from server.models import Notes, Tag
+from server.models import Notes, Trash, Tag
 from server import db
 
 @api_bp.route("/handshake")
@@ -33,7 +34,7 @@ def gp_notebook():
 			"code": 200,
 			"message":"No Notes found", 
 			"success": True,
-			"notes": None,
+			"notes": [],
 			}, 200
 	if request.method == "POST":
 		json_data = request.get_json()
@@ -114,7 +115,8 @@ def gpd_notebooks(id):
 				"success": False,
 				"errors": validate[1],
 				}, 400
-		update_note = current_user.update_note(note_id=id, title=title, body=body, color=color, tags_string=tags)
+		update_note = current_user.update_note(note_id=id, title=title, 
+			body=body, color=color, tags_string=tags)
 		if is_empty(tags, minimum=2):
 			tags = None
 		else:
@@ -125,7 +127,6 @@ def gpd_notebooks(id):
 				"code": 200,
 				"message":"Note updated successfully!", 
 				"success": True,
-				"category":"is-primary",
 				"note": note_schema.dump(update_note),
 				}, 200
 		return {
@@ -133,16 +134,68 @@ def gpd_notebooks(id):
 			"message":"Could not add to database. Might be an enternal error."
 			" Or that you may not have permission to do so. Please try again later.", 
 			"success": False,
-			"category":"is-warning",
+			"note": None,
 			}, 400
 	if request.method == "DELETE":
-		db.session.delete(note)
-		db.session.commit()
+		note = current_user.move_note_to_trash(note)
 		return {
 			"code": 200,
-			"message":"Note deleted successfully", 
+			"message":"Note moved to trash", 
 			"success": True,
-			"category":"is-primary",
+			"note": note_schema.dump(note),
+		}, 200
+
+@api_bp.route('/notebook/trash', methods=["GET", "DELETE"])
+@login_required
+def empty_trash():
+	if request.method == "GET":
+		notes = current_user.get_trashed_notes()
+		if notes:
+			return {
+				"code": 200,
+				"message":"Trashed Notes retrieved", 
+				"success": True,
+				"notes": trashed_notes_schema.dump(notes),
+				}, 200
+		return {
+			"code": 404,
+			"message":"No Trashed Notes were found", 
+			"success": True,
+			"notes": [],
+			}, 404
+	if request.method == "DELETE":
+		current_user.delete_trashed_notes(all=True)
+		return {
+			"code": 200,
+			"message":"Trash moved to trash", 
+			"success": True,
+			"notes": [], 
+		}, 200
+
+@api_bp.route('/notebook/trash/<int:id>', methods=["PUT", "DELETE"])
+@login_required
+def purge_note(id):
+	if request.method == "PUT":
+		note = current_user.restore_from_trash(note_id=id)
+		if note:
+			return {
+				"code": 200,
+				"message":"Note restored successfully", 
+				"success": True,
+				"note": note_schema.dump(note), 
+			}, 200
+		return {
+			"code": 400,
+			"message":"Could not restore the note", 
+			"success": False,
+			"note": None, 
+		}, 400
+	if request.method == "DELETE":
+		current_user.delete_trashed_notes(note_id=id)
+		return {
+			"code": 200,
+			"message":"Note purged successfully", 
+			"success": True,
 			"note_id": id, 
 		}, 200
 

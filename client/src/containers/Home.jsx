@@ -16,8 +16,9 @@ import WatchLaterIcon from '@material-ui/icons/WatchLater';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import DeleteIcon from '@material-ui/icons/Delete';
 import NoteAddIcon from '@material-ui/icons/NoteAdd';
+import AutorenewIcon from '@material-ui/icons/Autorenew';
 import Divider from '@material-ui/core/Divider';
-import { getNotes } from '../redux/actions/notebook';
+import { getNotes, getTrashedNotes } from '../redux/actions/notebook';
 import { connect } from 'react-redux';
 import CircularLoader from '../components/Common/Loaders';
 
@@ -49,12 +50,11 @@ export const useStyles = makeStyles((theme) => ({
 const mapLazyComponents = {
   SignIn: SignIn,
   SignUp: SignUp,
-  Conmentarium: Conmentarium,
 }
 
 const Home = (props) => {
 	
-  const { isAuthenticated, notebook, loadNotes } = {...props};
+  const { isAuthenticated, notebook, loadNotes, loadTrashedNotes, trashedNotes } = {...props};
 	const classes = useStyles();
   const [currentAuthOP, setCurrentAuthOP] = useState("SignIn");
   const [displayAddNoteComponent, setDisplayAddNoteComponent] = useState(false);
@@ -172,12 +172,27 @@ const Home = (props) => {
                 <Divider className={classes.divider} />
               </React.Fragment>
             }
-            <WatchLaterIcon />
-            <Conmentarium notebook={notebook.notebook}/>
-            <FavoriteIcon />
-            <Conmentarium notebook={notebook}/>
-            <DeleteIcon />
-            <Conmentarium notebook={[]}/>
+            <IconButton>
+              <WatchLaterIcon />
+            </IconButton>
+            <Conmentarium notebook={notebook.notebook} 
+              loadNotes={loadNotes} 
+              label='Recent' />
+            <IconButton>
+              <FavoriteIcon />
+            </IconButton>
+            <Conmentarium notebook={[]} 
+              loadNotes={loadNotes} 
+              label='Favorite' />
+            <IconButton>
+              <DeleteIcon />
+            </IconButton>
+            <IconButton>
+              <AutorenewIcon onClick={loadTrashedNotes} />
+            </IconButton>
+            <Conmentarium notebook={trashedNotes.notes} 
+              loadNotes={loadTrashedNotes}
+              label='Trash' />
           </React.Fragment>
         }
 		</React.Fragment>
@@ -188,12 +203,14 @@ const mapStateToProps = (state) => {
   return {
     isAuthenticated: state.auth.currentUser.authenticated,
     notebook: state.notebook,
+    trashedNotes: state.notebook.trashedNotes,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
     loadNotes: () => dispatch(getNotes()),
+    loadTrashedNotes: () => dispatch(getTrashedNotes()),
   };
 };
 
