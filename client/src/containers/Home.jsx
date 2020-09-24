@@ -5,6 +5,7 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Typography from "@material-ui/core/Typography";
+import Button from "@material-ui/core/Button";
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core';
 import GitHubIcon from '@material-ui/icons/GitHub';
@@ -18,7 +19,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import NoteAddIcon from '@material-ui/icons/NoteAdd';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import Divider from '@material-ui/core/Divider';
-import { getNotes, getTrashedNotes } from '../redux/actions/notebook';
+import { getNotes, getTrashedNotes, emptyTrash } from '../redux/actions/notebook';
 import { connect } from 'react-redux';
 import CircularLoader from '../components/Common/Loaders';
 
@@ -54,7 +55,7 @@ const mapLazyComponents = {
 
 const Home = (props) => {
 	
-  const { isAuthenticated, notebook, loadNotes, loadTrashedNotes, trashedNotes } = {...props};
+  const { isAuthenticated, notebook, loadNotes, loadTrashedNotes, trashedNotes, emptyTrash } = {...props};
 	const classes = useStyles();
   const [currentAuthOP, setCurrentAuthOP] = useState("SignIn");
   const [displayAddNoteComponent, setDisplayAddNoteComponent] = useState(false);
@@ -183,13 +184,16 @@ const Home = (props) => {
             </IconButton>
             <Conmentarium notebook={[]} 
               loadNotes={loadNotes} 
-              label='Favorite' />
+              label='Favorites' />
             <IconButton>
               <DeleteIcon />
             </IconButton>
             <IconButton>
               <AutorenewIcon onClick={loadTrashedNotes} />
             </IconButton>
+            <Button onClick={emptyTrash} >
+              Purge Trash
+            </Button>
             <Conmentarium notebook={trashedNotes.notes} 
               loadNotes={loadTrashedNotes}
               label='Trash' />
@@ -211,6 +215,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     loadNotes: () => dispatch(getNotes()),
     loadTrashedNotes: () => dispatch(getTrashedNotes()),
+    emptyTrash: () => dispatch(emptyTrash()),
   };
 };
 

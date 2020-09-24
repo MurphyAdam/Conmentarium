@@ -34,7 +34,7 @@ function notebook(state=INITIAL_STATE, action) {
 			}
 		case FETCH_NOTE_SUCCESS: {
 			return {...state,
-					notebook: concatArrayOfObjectsAndSortWithDateAsc(state.notebook, action.payload.notes),
+					notebook: concatArrayOfObjectsAndSortWithDateAsc(action.payload.notes || state.notebook),
 					count: state.notebook.length,
 					isLoading: false,
 					isLoaded: true, 
@@ -48,7 +48,8 @@ function notebook(state=INITIAL_STATE, action) {
 			}
 		case REFETCH_NOTE_SUCCESS: {
 			return {...state, 
-					notebook: concatArrayOfObjectsAndSortWithDateAsc(state.notebook, action.payload.notes),
+					notebook: concatArrayOfObjectsAndSortWithDateAsc(
+						filterArrayWithId(state.notebook, action.payload?.note?.id), [action.payload?.note]),
 					count: state.notebook.length,
 			}
 		}

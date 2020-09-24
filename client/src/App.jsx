@@ -8,6 +8,7 @@ import config from './config';
 import Notifications from 'react-notification-system-redux';
 import { connect } from 'react-redux';
 import { getCurrentUser } from './redux/actions/auth';
+import { changeDocumentTitle } from './util/methods';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -52,6 +53,7 @@ function App(props) {
 
   useEffect(() => {
     if(!isAuthenticated) loadUser();
+    else changeDocumentTitle("Conmentarium: A Simple Notebook App")
     // eslint-disable-next-line
   }, [isAuthenticated]);
 
