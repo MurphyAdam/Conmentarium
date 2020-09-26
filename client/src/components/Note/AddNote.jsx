@@ -40,6 +40,9 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
   },
+  cardColor: {
+    color: theme.palette.common.white,
+  }
 }));
 
 function AddNote(props) {
@@ -47,11 +50,12 @@ function AddNote(props) {
   const { setDisplayAddNoteComponent } = {...props};
   const dispatch = useDispatch();
   const classes = useStyles();
+  console.log(classes.cardColor.color);
   const [note, setNote] = useState(
     {
       title: null, 
       body: null, 
-      color: '#fff', 
+      color: "rgb(76 175 80 / 22%)", 
       tags: null
     });
   const [isLoading, setIsLoading] = useState(false);

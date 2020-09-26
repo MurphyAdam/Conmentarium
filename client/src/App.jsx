@@ -35,12 +35,12 @@ const UINotificationsStyle = {
 
 function App(props) {
 
-  const { loadUser, isAuthenticated, 
+  const { ui, loadUser, isAuthenticated, 
     notifications } = {...props};
   const classes = useStyles();
   const theme = createMuiTheme({
     palette: {
-      type: 'light',
+      type: ui.theme,
       primary: config.defaultPaletteColors.primary,
       secondary: config.defaultPaletteColors.secondary,
       contrastThreshold: 3,
@@ -74,6 +74,7 @@ function App(props) {
 
 const mapStateToProps = (state) => {
   return {
+    ui: state.ui,
     isAuthenticated: state.auth.currentUser.authenticated,
     notifications: state.notifications,
   };
