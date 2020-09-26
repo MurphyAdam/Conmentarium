@@ -30,16 +30,28 @@ if you are on Windows, use 'set' instead of export.
 
 #### What you need to develop this code locally
 
+#### Client-side
 1. Node (v14.7.0)
 2. NPM (6.14.7) or Yarn (1.22.4)
+3. Install client-side dependencies (see below)
+
+#### Server-side
+1. Python and PIP
+2. install server-side dependencies (see below)
 
 ####  How to develop this code
 2. Clone this repository
 3. Open command line in the cloned folder,
-   - To install dependencies, run ```  npm install  ``` or ``` yarn ```
-   - To run the application for development, run ```  npm start  ``` or ``` yarn start ```
+   - To install client side dependencies, run ```  npm install  ``` or ``` yarn ```
+   - To install server side dependencies, ```pip install -r requirements.txt```
+   - To run the client side application in development, run ```  npm start  ``` or ``` yarn start ```
 4. Open [localhost:3000](http://localhost:3000/) in the browser
 ---- 
+
+### Server-side Configs
+
+file config.py in the root directory of this app contains all the neccessary configs for our Flask app. It contains mainly three classes: Config, Development, and Testing. The latter two all inherit from Config. If you planning on running locally (development), please go to server/__init__.py and in the ```create_app()``` function's config_class parameter, pass in the class Development instead of Config. Leave as Config for deployment.
+You may change the config variables in each class as you wish.
 
 ### Deploy to Heroku
 
