@@ -19,14 +19,11 @@ yarn build (or npm run build)
 
 #### Server /conmentarium
 ```bash
-export FLASK_ENV=development
 flask db init
 flask db migrate
 flask db upgrade
 flask run
 ```
-
-if you are on Windows, use 'set' instead of export.
 
 #### What you need to develop this code locally
 

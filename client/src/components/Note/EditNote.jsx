@@ -164,8 +164,9 @@ return (
 
 EditNote.propTypes = {
   note: PropTypes.object,
-  reloadText: PropTypes.func.isRequired,
+  handleToggleActions: PropTypes.func.isRequired,
   addNotification: PropTypes.func.isRequired,
+  refetchNote: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => {
